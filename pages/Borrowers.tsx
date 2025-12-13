@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { 
-  Plus, 
-  Search, 
-  Edit2, 
-  Trash2, 
-  DollarSign, 
+import {
+  Plus,
+  Search,
+  Edit2,
+  Trash2,
+  DollarSign,
   Phone,
   PlusCircle,
   FileText,
@@ -26,7 +26,7 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRepayModalOpen, setIsRepayModalOpen] = useState(false);
   const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [repayingId, setRepayingId] = useState<string | null>(null);
@@ -43,11 +43,11 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
   });
 
   const [repayAmount, setRepayAmount] = useState('');
-  
+
   // Top Up States
   const [topUpAmount, setTopUpAmount] = useState('');
 
-  const filteredBorrowers = borrowers.filter(b => 
+  const filteredBorrowers = borrowers.filter(b =>
     b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     b.phone.includes(searchTerm) ||
     (b.note && b.note.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -94,31 +94,31 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
   const handleDownloadStatement = (borrower: Borrower) => {
     // 1. Borrower Summary Section
     const summaryRows = [
-        `"Borrower Name","${borrower.name}"`,
-        `"Phone","${borrower.phone}"`,
-        `"Email","${borrower.email}"`,
-        `"Loan Start Date","${borrower.startDate}"`,
-        `"Total Lent Amount","${borrower.loanAmount}"`,
-        `"Total Repaid Amount","${borrower.repaidAmount}"`,
-        `"Outstanding Balance","${borrower.totalPayable - borrower.repaidAmount}"`,
-        `"Current Status","${borrower.status}"`,
-        `"Note","${(borrower.note || '').replace(/"/g, '""')}"`
+      `"Borrower Name","${borrower.name}"`,
+      `"Phone","${borrower.phone}"`,
+      `"Email","${borrower.email}"`,
+      `"Loan Start Date","${borrower.startDate}"`,
+      `"Total Lent Amount","${borrower.loanAmount}"`,
+      `"Total Repaid Amount","${borrower.repaidAmount}"`,
+      `"Outstanding Balance","${borrower.totalPayable - borrower.repaidAmount}"`,
+      `"Current Status","${borrower.status}"`,
+      `"Note","${(borrower.note || '').replace(/"/g, '""')}"`
     ];
 
     // 2. Payment History Section
     const historyHeader = '"Payment Date","Amount Paid"';
-    const historyRows = borrower.history.map(h => 
-        `"${new Date(h.date).toLocaleDateString()}","${h.amount}"`
+    const historyRows = borrower.history.map(h =>
+      `"${new Date(h.date).toLocaleDateString()}","${h.amount}"`
     );
 
     // Combine into one CSV
     const csvContent = [
-        '--- Borrower Details ---',
-        ...summaryRows,
-        '', // Empty line for separation
-        '--- Payment History ---',
-        historyHeader,
-        ...historyRows
+      '--- Borrower Details ---',
+      ...summaryRows,
+      '', // Empty line for separation
+      '--- Payment History ---',
+      historyHeader,
+      ...historyRows
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -146,9 +146,14 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
 
   const handleOpenEdit = (b: Borrower) => {
     setEditingId(b.id);
+    // Strip +91 if present for editing
+    const phone = b.phone.startsWith('+91')
+      ? b.phone.substring(3).trim()
+      : b.phone;
+
     setFormData({
       name: b.name,
-      phone: b.phone,
+      phone: phone,
       email: b.email,
       loanAmount: b.loanAmount.toString(),
       startDate: b.startDate,
@@ -173,7 +178,7 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
     e.preventDefault();
     const payload = {
       name: formData.name,
-      phone: formData.phone,
+      phone: `+91 ${formData.phone}`, // Add prefix on save
       email: formData.email,
       loanAmount: Number(formData.loanAmount),
       totalPayable: Number(formData.loanAmount), // Repayment = Lent Amount (No Interest)
@@ -222,14 +227,14 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
           <p className="text-slate-400">Manage your loans and track repayments.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button 
+          <button
             onClick={handleDownloadCSV}
             className="inline-flex items-center justify-center px-4 py-2 border border-slate-700 rounded-lg shadow-sm text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors"
           >
             <Download size={20} className="mr-2" />
             Export All
           </button>
-          <button 
+          <button
             onClick={handleOpenAdd}
             className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
           >
@@ -272,7 +277,7 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
               {filteredBorrowers.map((borrower) => {
                 const percentage = Math.min(100, (borrower.repaidAmount / borrower.totalPayable) * 100);
                 const remaining = borrower.totalPayable - borrower.repaidAmount;
-                
+
                 return (
                   <tr key={borrower.id} className="hover:bg-slate-800/50 transition-colors">
                     <td className="px-6 py-4">
@@ -305,25 +310,24 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                           <span className="text-slate-400">₹{remaining} left</span>
                         </div>
                         <div className="w-full bg-slate-700 rounded-full h-2">
-                          <div 
-                            className={`h-2 rounded-full ${borrower.status === 'Completed' ? 'bg-green-500' : 'bg-blue-600'}`} 
+                          <div
+                            className={`h-2 rounded-full ${borrower.status === 'Completed' ? 'bg-green-500' : 'bg-blue-600'}`}
                             style={{ width: `${percentage}%` }}
                           ></div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap align-top pt-5">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        borrower.status === 'Active' 
-                          ? 'bg-yellow-900/30 text-yellow-500 border border-yellow-700/30' 
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${borrower.status === 'Active'
+                          ? 'bg-yellow-900/30 text-yellow-500 border border-yellow-700/30'
                           : 'bg-green-900/30 text-green-500 border border-green-700/30'
-                      }`}>
+                        }`}>
                         {borrower.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-middle">
                       <div className="flex items-center justify-end space-x-2">
-                        <button 
+                        <button
                           onClick={() => handleOpenTopUp(borrower)}
                           title="Add to Loan (Top-up)"
                           className="text-purple-500 hover:text-purple-400 p-2 hover:bg-purple-500/10 rounded transition-colors"
@@ -331,17 +335,17 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                           <PlusCircle size={18} />
                         </button>
 
-                         {borrower.status === 'Active' && (
-                            <button 
-                              onClick={() => handleOpenRepay(borrower)}
-                              title="Add Repayment"
-                              className="text-green-500 hover:text-green-400 p-2 hover:bg-green-500/10 rounded transition-colors"
-                            >
-                              <DollarSign size={18} />
-                            </button>
-                         )}
-                        
-                        <button 
+                        {borrower.status === 'Active' && (
+                          <button
+                            onClick={() => handleOpenRepay(borrower)}
+                            title="Add Repayment"
+                            className="text-green-500 hover:text-green-400 p-2 hover:bg-green-500/10 rounded transition-colors"
+                          >
+                            <DollarSign size={18} />
+                          </button>
+                        )}
+
+                        <button
                           onClick={() => handleDownloadStatement(borrower)}
                           title="Download Statement"
                           className="text-slate-400 hover:text-slate-200 p-2 hover:bg-slate-700 rounded transition-colors"
@@ -349,14 +353,14 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                           <FileDown size={18} />
                         </button>
 
-                        <button 
+                        <button
                           onClick={() => handleOpenEdit(borrower)}
                           title="Edit"
                           className="text-blue-500 hover:text-blue-400 p-2 hover:bg-blue-500/10 rounded transition-colors"
                         >
                           <Edit2 size={18} />
                         </button>
-                        <button 
+                        <button
                           onClick={() => onDelete(borrower.id)}
                           title="Delete"
                           className="text-red-500 hover:text-red-400 p-2 hover:bg-red-500/10 rounded transition-colors"
@@ -383,114 +387,113 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
       {/* List - Mobile View (Cards) */}
       <div className="md:hidden space-y-4">
         {filteredBorrowers.map((borrower) => {
-           const percentage = Math.min(100, (borrower.repaidAmount / borrower.totalPayable) * 100);
-           const remaining = borrower.totalPayable - borrower.repaidAmount;
-           
-           return (
-             <div key={borrower.id} className="bg-slate-900 rounded-lg border border-slate-800 p-4 shadow-sm flex flex-col gap-4">
-               {/* Top Row: Info & Status */}
-               <div className="flex justify-between items-start">
-                 <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-full bg-blue-900/50 border border-blue-700/50 flex items-center justify-center text-blue-400 font-bold text-lg">
-                       {borrower.name.charAt(0)}
-                    </div>
-                    <div>
-                       <h3 className="text-base font-bold text-white">{borrower.name}</h3>
-                       <div className="flex items-center text-xs text-slate-400 mt-1">
-                          <Phone size={12} className="mr-1" />
-                          {borrower.phone}
-                       </div>
-                    </div>
-                 </div>
-                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                   borrower.status === 'Active' 
-                     ? 'bg-yellow-900/30 text-yellow-500 border border-yellow-700/30' 
-                     : 'bg-green-900/30 text-green-500 border border-green-700/30'
-                 }`}>
-                   {borrower.status}
-                 </span>
-               </div>
+          const percentage = Math.min(100, (borrower.repaidAmount / borrower.totalPayable) * 100);
+          const remaining = borrower.totalPayable - borrower.repaidAmount;
 
-               {/* Note */}
-               {borrower.note && (
-                  <div className="text-xs text-slate-400 bg-slate-950 p-3 rounded border border-slate-800 italic flex items-start gap-2">
-                     <FileText size={14} className="flex-shrink-0 mt-0.5 text-slate-500" />
-                     <span>{borrower.note}</span>
-                  </div>
-               )}
-
-               {/* Stats Grid */}
-               <div className="grid grid-cols-2 gap-3 bg-slate-950/50 p-3 rounded-lg border border-slate-800/50">
-                  <div>
-                     <span className="text-xs text-slate-500 block">Lent Amount</span>
-                     <span className="text-lg font-bold text-white">₹{borrower.loanAmount}</span>
+          return (
+            <div key={borrower.id} className="bg-slate-900 rounded-lg border border-slate-800 p-4 shadow-sm flex flex-col gap-4">
+              {/* Top Row: Info & Status */}
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-full bg-blue-900/50 border border-blue-700/50 flex items-center justify-center text-blue-400 font-bold text-lg">
+                    {borrower.name.charAt(0)}
                   </div>
                   <div>
-                     <span className="text-xs text-slate-500 block">Paid Back</span>
-                     <span className="text-lg font-bold text-emerald-400">₹{borrower.repaidAmount}</span>
+                    <h3 className="text-base font-bold text-white">{borrower.name}</h3>
+                    <div className="flex items-center text-xs text-slate-400 mt-1">
+                      <Phone size={12} className="mr-1" />
+                      {borrower.phone}
+                    </div>
                   </div>
-               </div>
+                </div>
+                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${borrower.status === 'Active'
+                    ? 'bg-yellow-900/30 text-yellow-500 border border-yellow-700/30'
+                    : 'bg-green-900/30 text-green-500 border border-green-700/30'
+                  }`}>
+                  {borrower.status}
+                </span>
+              </div>
 
-               {/* Progress */}
-               <div className="space-y-1">
-                  <div className="flex justify-between text-xs">
-                     <span className="text-slate-400">Repayment Progress</span>
-                     <span className="text-slate-400">₹{remaining} remaining</span>
-                  </div>
-                  <div className="w-full bg-slate-700 rounded-full h-2">
-                     <div 
-                       className={`h-2 rounded-full ${borrower.status === 'Completed' ? 'bg-green-500' : 'bg-blue-600'}`} 
-                       style={{ width: `${percentage}%` }}
-                     ></div>
-                  </div>
-               </div>
+              {/* Note */}
+              {borrower.note && (
+                <div className="text-xs text-slate-400 bg-slate-950 p-3 rounded border border-slate-800 italic flex items-start gap-2">
+                  <FileText size={14} className="flex-shrink-0 mt-0.5 text-slate-500" />
+                  <span>{borrower.note}</span>
+                </div>
+              )}
 
-               {/* Actions */}
-               <div className="flex items-center justify-between border-t border-slate-800 pt-3 mt-1">
-                   <div className="flex gap-2">
-                       <button 
-                         onClick={() => handleOpenTopUp(borrower)}
-                         className="px-3 py-2 text-purple-400 bg-purple-500/10 rounded-lg hover:bg-purple-500/20 transition-colors flex items-center gap-2"
-                       >
-                         <PlusCircle size={18} />
-                         <span className="text-xs font-medium">Top Up</span>
-                       </button>
-                       {borrower.status === 'Active' && (
-                         <button 
-                           onClick={() => handleOpenRepay(borrower)}
-                           className="px-3 py-2 text-green-400 bg-green-500/10 rounded-lg hover:bg-green-500/20 transition-colors flex items-center gap-2"
-                         >
-                           <DollarSign size={18} />
-                           <span className="text-xs font-medium">Repay</span>
-                         </button>
-                       )}
-                   </div>
-                   <div className="flex gap-1">
-                       <button 
-                         onClick={() => handleDownloadStatement(borrower)}
-                         className="p-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-colors"
-                         title="Download Statement"
-                       >
-                         <FileDown size={18} />
-                       </button>
-                       <button 
-                         onClick={() => handleOpenEdit(borrower)}
-                         className="p-2 text-blue-400 hover:bg-slate-800 rounded-lg transition-colors"
-                         title="Edit"
-                       >
-                         <Edit2 size={18} />
-                       </button>
-                       <button 
-                         onClick={() => onDelete(borrower.id)}
-                         className="p-2 text-red-400 hover:bg-slate-800 rounded-lg transition-colors"
-                         title="Delete"
-                       >
-                         <Trash2 size={18} />
-                       </button>
-                   </div>
-               </div>
-             </div>
-           );
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-3 bg-slate-950/50 p-3 rounded-lg border border-slate-800/50">
+                <div>
+                  <span className="text-xs text-slate-500 block">Lent Amount</span>
+                  <span className="text-lg font-bold text-white">₹{borrower.loanAmount}</span>
+                </div>
+                <div>
+                  <span className="text-xs text-slate-500 block">Paid Back</span>
+                  <span className="text-lg font-bold text-emerald-400">₹{borrower.repaidAmount}</span>
+                </div>
+              </div>
+
+              {/* Progress */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-400">Repayment Progress</span>
+                  <span className="text-slate-400">₹{remaining} remaining</span>
+                </div>
+                <div className="w-full bg-slate-700 rounded-full h-2">
+                  <div
+                    className={`h-2 rounded-full ${borrower.status === 'Completed' ? 'bg-green-500' : 'bg-blue-600'}`}
+                    style={{ width: `${percentage}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-between border-t border-slate-800 pt-3 mt-1">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleOpenTopUp(borrower)}
+                    className="px-3 py-2 text-purple-400 bg-purple-500/10 rounded-lg hover:bg-purple-500/20 transition-colors flex items-center gap-2"
+                  >
+                    <PlusCircle size={18} />
+                    <span className="text-xs font-medium">Top Up</span>
+                  </button>
+                  {borrower.status === 'Active' && (
+                    <button
+                      onClick={() => handleOpenRepay(borrower)}
+                      className="px-3 py-2 text-green-400 bg-green-500/10 rounded-lg hover:bg-green-500/20 transition-colors flex items-center gap-2"
+                    >
+                      <DollarSign size={18} />
+                      <span className="text-xs font-medium">Repay</span>
+                    </button>
+                  )}
+                </div>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => handleDownloadStatement(borrower)}
+                    className="p-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-colors"
+                    title="Download Statement"
+                  >
+                    <FileDown size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleOpenEdit(borrower)}
+                    className="p-2 text-blue-400 hover:bg-slate-800 rounded-lg transition-colors"
+                    title="Edit"
+                  >
+                    <Edit2 size={18} />
+                  </button>
+                  <button
+                    onClick={() => onDelete(borrower.id)}
+                    className="p-2 text-red-400 hover:bg-slate-800 rounded-lg transition-colors"
+                    title="Delete"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
         })}
         {filteredBorrowers.length === 0 && (
           <div className="text-center py-12 text-slate-500 bg-slate-900 rounded-lg border border-slate-800">
@@ -518,15 +521,27 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                       <div className="mt-4 grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-2">
                         <div className="sm:col-span-2">
                           <label className="block text-sm font-medium text-slate-300">Full Name</label>
-                          <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500" />
+                          <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-300">Phone</label>
-                          <input required type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500" />
+                          <div className="mt-1 relative rounded-md shadow-sm">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <span className="text-slate-500 sm:text-sm">+91</span>
+                            </div>
+                            <input
+                              required
+                              type="tel"
+                              value={formData.phone}
+                              onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                              className="pl-12 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500"
+                              placeholder="9876543210"
+                            />
+                          </div>
                         </div>
-                         <div>
+                        <div>
                           <label className="block text-sm font-medium text-slate-300">Start Date</label>
-                          <input required type="date" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} className="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500" />
+                          <input required type="date" value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} className="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500" />
                         </div>
                         <div className="sm:col-span-2">
                           <label className="block text-sm font-medium text-slate-300">Loan Amount</label>
@@ -534,16 +549,16 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                               <span className="text-slate-500 sm:text-sm">₹</span>
                             </div>
-                            <input required type="number" min="0" value={formData.loanAmount} onChange={e => setFormData({...formData, loanAmount: e.target.value})} className="pl-7 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500" />
+                            <input required type="number" min="0" value={formData.loanAmount} onChange={e => setFormData({ ...formData, loanAmount: e.target.value })} className="pl-7 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500" />
                           </div>
                           <p className="mt-1 text-xs text-slate-500">Repayment amount will be equal to the loan amount (No interest).</p>
                         </div>
                         <div className="sm:col-span-2">
                           <label className="block text-sm font-medium text-slate-300">Note</label>
-                          <textarea 
-                            rows={3} 
-                            value={formData.note} 
-                            onChange={e => setFormData({...formData, note: e.target.value})} 
+                          <textarea
+                            rows={3}
+                            value={formData.note}
+                            onChange={e => setFormData({ ...formData, note: e.target.value })}
                             placeholder="Reason for loan, collateral details, etc."
                             className="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500"
                           />
@@ -570,27 +585,27 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
       {isRepayModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-             <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
               <div className="absolute inset-0 bg-black bg-opacity-75" onClick={() => setIsRepayModalOpen(false)}></div>
             </div>
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div className="inline-block align-bottom bg-slate-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all border border-slate-700 sm:my-8 sm:align-middle sm:max-w-sm w-full">
               <form onSubmit={handleRepaySubmit}>
-                 <div className="bg-slate-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div className="text-center sm:text-left">
-                      <h3 className="text-lg leading-6 font-medium text-white">Record Payment</h3>
-                      <div className="mt-4">
-                        <label className="block text-sm font-medium text-slate-300">Amount Received</label>
-                        <div className="mt-1 relative rounded-md shadow-sm">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span className="text-slate-500 sm:text-sm">₹</span>
-                          </div>
-                          <input required type="number" min="1" value={repayAmount} onChange={e => setRepayAmount(e.target.value)} className="pl-7 block w-full bg-slate-800 border border-blue-500/50 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 text-lg placeholder-slate-600" placeholder="0.00" />
+                <div className="bg-slate-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="text-center sm:text-left">
+                    <h3 className="text-lg leading-6 font-medium text-white">Record Payment</h3>
+                    <div className="mt-4">
+                      <label className="block text-sm font-medium text-slate-300">Amount Received</label>
+                      <div className="mt-1 relative rounded-md shadow-sm">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <span className="text-slate-500 sm:text-sm">₹</span>
                         </div>
+                        <input required type="number" min="1" value={repayAmount} onChange={e => setRepayAmount(e.target.value)} className="pl-7 block w-full bg-slate-800 border border-blue-500/50 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 text-lg placeholder-slate-600" placeholder="0.00" />
                       </div>
                     </div>
-                 </div>
-                 <div className="bg-slate-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-700">
+                  </div>
+                </div>
+                <div className="bg-slate-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-700">
                   <button type="submit" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
                     Confirm Payment
                   </button>
@@ -608,30 +623,30 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
       {isTopUpModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-             <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
               <div className="absolute inset-0 bg-black bg-opacity-75" onClick={() => setIsTopUpModalOpen(false)}></div>
             </div>
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div className="inline-block align-bottom bg-slate-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all border border-slate-700 sm:my-8 sm:align-middle sm:max-w-md w-full">
               <form onSubmit={handleTopUpSubmit}>
-                 <div className="bg-slate-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div className="text-center sm:text-left">
-                      <h3 className="text-lg leading-6 font-medium text-white">Add Money to Loan</h3>
-                      <p className="mt-1 text-sm text-slate-400">Increase the existing loan amount for this borrower.</p>
-                      <div className="mt-4 space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-slate-300">Amount to Add</label>
-                          <div className="mt-1 relative rounded-md shadow-sm">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <span className="text-slate-500 sm:text-sm">₹</span>
-                            </div>
-                            <input required type="number" min="1" value={topUpAmount} onChange={e => setTopUpAmount(e.target.value)} className="pl-7 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-purple-500 focus:border-purple-500 placeholder-slate-600" placeholder="e.g. 5000" />
+                <div className="bg-slate-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="text-center sm:text-left">
+                    <h3 className="text-lg leading-6 font-medium text-white">Add Money to Loan</h3>
+                    <p className="mt-1 text-sm text-slate-400">Increase the existing loan amount for this borrower.</p>
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-300">Amount to Add</label>
+                        <div className="mt-1 relative rounded-md shadow-sm">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span className="text-slate-500 sm:text-sm">₹</span>
                           </div>
+                          <input required type="number" min="1" value={topUpAmount} onChange={e => setTopUpAmount(e.target.value)} className="pl-7 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-purple-500 focus:border-purple-500 placeholder-slate-600" placeholder="e.g. 5000" />
                         </div>
                       </div>
                     </div>
-                 </div>
-                 <div className="bg-slate-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-700">
+                  </div>
+                </div>
+                <div className="bg-slate-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-700">
                   <button type="submit" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
                     Update Loan
                   </button>
