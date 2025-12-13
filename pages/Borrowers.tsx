@@ -245,7 +245,7 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-slate-900 p-4 rounded-lg border border-slate-800 shadow-sm">
+      <div className="bg-slate-900/40 backdrop-blur-md p-4 rounded-lg border border-white/5 shadow-sm">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search size={18} className="text-slate-400" />
@@ -253,7 +253,7 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
           <input
             type="text"
             placeholder="Search by name, phone, or note..."
-            className="block w-full pl-10 pr-3 py-2 border border-slate-700 rounded-md leading-5 bg-slate-800 text-white placeholder-slate-500 focus:outline-none focus:placeholder-slate-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="block w-full pl-10 pr-3 py-2 border border-white/10 rounded-md leading-5 bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:placeholder-slate-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -261,10 +261,10 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
       </div>
 
       {/* List - Desktop View (Table) */}
-      <div className="hidden md:block bg-slate-900 rounded-lg border border-slate-800 shadow-sm overflow-hidden">
+      <div className="hidden md:block bg-slate-900/40 backdrop-blur-md rounded-lg border border-white/5 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-800">
-            <thead className="bg-slate-950">
+          <table className="min-w-full divide-y divide-white/5">
+            <thead className="bg-black/20">
               <tr>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Borrower</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Loan Details</th>
@@ -273,13 +273,13 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                 <th scope="col" className="relative px-6 py-3"><span className="sr-only">Actions</span></th>
               </tr>
             </thead>
-            <tbody className="bg-slate-900 divide-y divide-slate-800">
+            <tbody className="bg-transparent divide-y divide-white/5">
               {filteredBorrowers.map((borrower) => {
                 const percentage = Math.min(100, (borrower.repaidAmount / borrower.totalPayable) * 100);
                 const remaining = borrower.totalPayable - borrower.repaidAmount;
 
                 return (
-                  <tr key={borrower.id} className="hover:bg-slate-800/50 transition-colors">
+                  <tr key={borrower.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-start">
                         <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-900/50 border border-blue-700/50 flex items-center justify-center text-blue-400 font-bold mt-1">
@@ -319,8 +319,8 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap align-top pt-5">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${borrower.status === 'Active'
-                          ? 'bg-yellow-900/30 text-yellow-500 border border-yellow-700/30'
-                          : 'bg-green-900/30 text-green-500 border border-green-700/30'
+                        ? 'bg-yellow-900/30 text-yellow-500 border border-yellow-700/30'
+                        : 'bg-green-900/30 text-green-500 border border-green-700/30'
                         }`}>
                         {borrower.status}
                       </span>
@@ -391,7 +391,7 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
           const remaining = borrower.totalPayable - borrower.repaidAmount;
 
           return (
-            <div key={borrower.id} className="bg-slate-900 rounded-lg border border-slate-800 p-4 shadow-sm flex flex-col gap-4">
+            <div key={borrower.id} className="bg-slate-900/40 backdrop-blur-md rounded-lg border border-white/5 p-4 shadow-sm flex flex-col gap-4">
               {/* Top Row: Info & Status */}
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-3">
@@ -407,8 +407,8 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                   </div>
                 </div>
                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${borrower.status === 'Active'
-                    ? 'bg-yellow-900/30 text-yellow-500 border border-yellow-700/30'
-                    : 'bg-green-900/30 text-green-500 border border-green-700/30'
+                  ? 'bg-yellow-900/30 text-yellow-500 border border-yellow-700/30'
+                  : 'bg-green-900/30 text-green-500 border border-green-700/30'
                   }`}>
                   {borrower.status}
                 </span>
@@ -423,7 +423,7 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
               )}
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-3 bg-slate-950/50 p-3 rounded-lg border border-slate-800/50">
+              <div className="grid grid-cols-2 gap-3 bg-black/20 p-3 rounded-lg border border-white/5">
                 <div>
                   <span className="text-xs text-slate-500 block">Lent Amount</span>
                   <span className="text-lg font-bold text-white">₹{borrower.loanAmount}</span>
@@ -510,9 +510,9 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
               <div className="absolute inset-0 bg-black bg-opacity-75" onClick={() => setIsModalOpen(false)}></div>
             </div>
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div className="inline-block align-bottom bg-slate-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all border border-slate-700 sm:my-8 sm:align-middle sm:max-w-lg w-full">
+            <div className="inline-block align-bottom bg-slate-900/90 backdrop-blur-xl rounded-lg text-left overflow-hidden shadow-xl transform transition-all border border-white/10 sm:my-8 sm:align-middle sm:max-w-lg w-full">
               <form onSubmit={handleSubmit}>
-                <div className="bg-slate-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="bg-transparent px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="sm:flex sm:items-start">
                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                       <h3 className="text-lg leading-6 font-medium text-white" id="modal-title">
@@ -521,7 +521,7 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                       <div className="mt-4 grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-2">
                         <div className="sm:col-span-2">
                           <label className="block text-sm font-medium text-slate-300">Full Name</label>
-                          <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500" />
+                          <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="mt-1 block w-full bg-slate-900/50 border border-white/10 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-300">Phone</label>
@@ -534,14 +534,14 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                               type="tel"
                               value={formData.phone}
                               onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                              className="pl-12 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500"
+                              className="pl-12 block w-full bg-slate-900/50 border border-white/10 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500"
                               placeholder="9876543210"
                             />
                           </div>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-300">Start Date</label>
-                          <input required type="date" value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} className="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500" />
+                          <input required type="date" value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} className="mt-1 block w-full bg-slate-900/50 border border-white/10 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500" />
                         </div>
                         <div className="sm:col-span-2">
                           <label className="block text-sm font-medium text-slate-300">Loan Amount</label>
@@ -549,7 +549,7 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                               <span className="text-slate-500 sm:text-sm">₹</span>
                             </div>
-                            <input required type="number" min="0" value={formData.loanAmount} onChange={e => setFormData({ ...formData, loanAmount: e.target.value })} className="pl-7 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500" />
+                            <input required type="number" min="0" value={formData.loanAmount} onChange={e => setFormData({ ...formData, loanAmount: e.target.value })} className="pl-7 block w-full bg-slate-900/50 border border-white/10 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500" />
                           </div>
                           <p className="mt-1 text-xs text-slate-500">Repayment amount will be equal to the loan amount (No interest).</p>
                         </div>
@@ -560,14 +560,14 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                             value={formData.note}
                             onChange={e => setFormData({ ...formData, note: e.target.value })}
                             placeholder="Reason for loan, collateral details, etc."
-                            className="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500"
+                            className="mt-1 block w-full bg-slate-900/50 border border-white/10 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500"
                           />
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="bg-slate-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-700">
+                <div className="bg-black/20 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-white/10">
                   <button type="submit" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
                     {editingId ? 'Save Changes' : 'Create Borrower'}
                   </button>
@@ -589,9 +589,9 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
               <div className="absolute inset-0 bg-black bg-opacity-75" onClick={() => setIsRepayModalOpen(false)}></div>
             </div>
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div className="inline-block align-bottom bg-slate-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all border border-slate-700 sm:my-8 sm:align-middle sm:max-w-sm w-full">
+            <div className="inline-block align-bottom bg-slate-900/90 backdrop-blur-xl rounded-lg text-left overflow-hidden shadow-xl transform transition-all border border-white/10 sm:my-8 sm:align-middle sm:max-w-sm w-full">
               <form onSubmit={handleRepaySubmit}>
-                <div className="bg-slate-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="bg-transparent px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="text-center sm:text-left">
                     <h3 className="text-lg leading-6 font-medium text-white">Record Payment</h3>
                     <div className="mt-4">
@@ -600,12 +600,12 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <span className="text-slate-500 sm:text-sm">₹</span>
                         </div>
-                        <input required type="number" min="1" value={repayAmount} onChange={e => setRepayAmount(e.target.value)} className="pl-7 block w-full bg-slate-800 border border-blue-500/50 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 text-lg placeholder-slate-600" placeholder="0.00" />
+                        <input required type="number" min="1" value={repayAmount} onChange={e => setRepayAmount(e.target.value)} className="pl-7 block w-full bg-slate-900/50 border border-white/10 rounded-md shadow-sm py-2 px-3 text-white focus:ring-blue-500 focus:border-blue-500 text-lg placeholder-slate-600" placeholder="0.00" />
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="bg-slate-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-700">
+                <div className="bg-black/20 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-white/10">
                   <button type="submit" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
                     Confirm Payment
                   </button>
@@ -627,9 +627,9 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
               <div className="absolute inset-0 bg-black bg-opacity-75" onClick={() => setIsTopUpModalOpen(false)}></div>
             </div>
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div className="inline-block align-bottom bg-slate-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all border border-slate-700 sm:my-8 sm:align-middle sm:max-w-md w-full">
+            <div className="inline-block align-bottom bg-slate-900/90 backdrop-blur-xl rounded-lg text-left overflow-hidden shadow-xl transform transition-all border border-white/10 sm:my-8 sm:align-middle sm:max-w-md w-full">
               <form onSubmit={handleTopUpSubmit}>
-                <div className="bg-slate-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="bg-transparent px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="text-center sm:text-left">
                     <h3 className="text-lg leading-6 font-medium text-white">Add Money to Loan</h3>
                     <p className="mt-1 text-sm text-slate-400">Increase the existing loan amount for this borrower.</p>
@@ -640,13 +640,13 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <span className="text-slate-500 sm:text-sm">₹</span>
                           </div>
-                          <input required type="number" min="1" value={topUpAmount} onChange={e => setTopUpAmount(e.target.value)} className="pl-7 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 text-white focus:ring-purple-500 focus:border-purple-500 placeholder-slate-600" placeholder="e.g. 5000" />
+                          <input required type="number" min="1" value={topUpAmount} onChange={e => setTopUpAmount(e.target.value)} className="pl-7 block w-full bg-slate-900/50 border border-white/10 rounded-md shadow-sm py-2 px-3 text-white focus:ring-purple-500 focus:border-purple-500 placeholder-slate-600" placeholder="e.g. 5000" />
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="bg-slate-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-700">
+                <div className="bg-black/20 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-white/10">
                   <button type="submit" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
                     Update Loan
                   </button>

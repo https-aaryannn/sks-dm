@@ -18,7 +18,7 @@ const colorMap = {
 
 const DashboardStatsCard: React.FC<DashboardStatsCardProps> = ({ title, value, icon: Icon, color, trend }) => {
   return (
-    <div className="bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-800 transition-all hover:border-slate-700 hover:shadow-md">
+    <div className="bg-slate-900/40 backdrop-blur-md rounded-xl p-6 shadow-sm border border-white/5 transition-all hover:border-white/10 hover:shadow-lg hover:bg-slate-900/60">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-slate-400">{title}</p>

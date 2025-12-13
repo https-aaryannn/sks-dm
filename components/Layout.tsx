@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Users, 
-  LogOut, 
-  Menu, 
-  X, 
+import {
+  LayoutDashboard,
+  Users,
+  LogOut,
+  Menu,
+  X,
   BadgeDollarSign
 } from 'lucide-react';
 
@@ -28,24 +28,24 @@ const Layout: React.FC<LayoutProps> = ({ onLogout }) => {
   ];
 
   return (
-    <div className="flex h-screen bg-slate-950 overflow-hidden text-slate-200">
+    <div className="flex h-screen overflow-hidden text-slate-200">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-70 z-20 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside 
+      <aside
         className={`
-          fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 border-r border-slate-800 text-white transform transition-transform duration-300 ease-in-out
+          fixed inset-y-0 left-0 z-30 w-64 bg-slate-900/50 backdrop-blur-xl border-r border-white/10 text-white transform transition-transform duration-300 ease-in-out
           md:relative md:translate-x-0
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        <div className="flex items-center justify-between p-6 border-b border-slate-800">
+        <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div className="flex items-center space-x-2">
             <BadgeDollarSign className="w-8 h-8 text-blue-500" />
             <span className="text-xl font-bold tracking-wide text-slate-100">SKS Lending</span>
@@ -63,9 +63,9 @@ const Layout: React.FC<LayoutProps> = ({ onLogout }) => {
               onClick={() => setIsSidebarOpen(false)}
               className={({ isActive }) => `
                 flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200
-                ${isActive 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' 
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-white'}
+                ${isActive
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20'
+                  : 'text-slate-400 hover:bg-white/5 hover:text-white'}
               `}
             >
               <item.icon size={20} />
@@ -74,7 +74,7 @@ const Layout: React.FC<LayoutProps> = ({ onLogout }) => {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-slate-800">
+        <div className="p-4 border-t border-white/10">
           <button
             onClick={handleLogout}
             className="flex items-center space-x-3 px-4 py-3 w-full text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
@@ -88,7 +88,7 @@ const Layout: React.FC<LayoutProps> = ({ onLogout }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile Header */}
-        <header className="bg-slate-900 border-b border-slate-800 shadow-sm md:hidden flex items-center justify-between p-4 z-10">
+        <header className="bg-slate-900/50 backdrop-blur-xl border-b border-white/10 shadow-sm md:hidden flex items-center justify-between p-4 z-10">
           <div className="flex items-center space-x-2">
             <BadgeDollarSign className="w-6 h-6 text-blue-500" />
             <span className="font-bold text-slate-100">SKS Lending</span>
@@ -98,7 +98,7 @@ const Layout: React.FC<LayoutProps> = ({ onLogout }) => {
           </button>
         </header>
 
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-950 p-4 md:p-8">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>
