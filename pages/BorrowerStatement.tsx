@@ -114,7 +114,7 @@ const BorrowerStatement: React.FC = () => {
             <div className="max-w-3xl mx-auto space-y-6">
 
                 {/* Header Card */}
-                <div id="statement-content">
+                <div id="statement-content" className="bg-slate-950 text-white p-4">
                     <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-2xl p-6 shadow-xl mb-6">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/5 pb-6">
                             <div>
