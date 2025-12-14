@@ -64,7 +64,7 @@ const BorrowerStatement: React.FC = () => {
             margin: 10,
             filename: `Statement_${borrower.name.replace(/\s+/g, '_')}.pdf`,
             image: { type: 'jpeg', quality: 0.98 } as any,
-            html2canvas: { scale: 2, useCORS: true, logging: false },
+            html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 1024 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } as any
         };
         html2pdf().from(element).set(opt).save();
@@ -118,7 +118,7 @@ const BorrowerStatement: React.FC = () => {
                     <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-2xl p-6 shadow-xl mb-6">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/5 pb-6">
                             <div>
-                                <h1 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
+                                <h1 className="text-2xl md:text-3xl font-bold text-blue-400">
                                     {borrower.name}
                                 </h1>
                                 <div className="flex items-center text-slate-400 mt-2">
@@ -127,7 +127,7 @@ const BorrowerStatement: React.FC = () => {
                                 </div>
                             </div>
                             <div className="flex flex-col md:flex-row gap-3 items-end md:items-center">
-                                <div className="flex gap-2 no-print">
+                                <div className="flex gap-2 no-print" data-html2canvas-ignore="true">
                                     <button
                                         onClick={handlePrint}
                                         className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition-colors"
