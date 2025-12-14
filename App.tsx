@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Borrowers from './pages/Borrowers';
+import BorrowerStatement from './pages/BorrowerStatement';
 import { Borrower } from './types';
 import { subscribeToAuthChanges, logout } from './services/authService';
 import { getBorrowers, addBorrower, updateBorrower, deleteBorrower } from './services/firestoreService';
@@ -170,6 +171,9 @@ const App: React.FC = () => {
         <Route path="/login" element={
           isAuthenticated ? <Navigate to="/" replace /> : <Login />
         } />
+
+        {/* Public Statement Route */}
+        <Route path="/statement/:id" element={<BorrowerStatement />} />
 
         <Route path="/" element={
           isAuthenticated ? <Layout onLogout={handleLogout} /> : <Navigate to="/login" replace />

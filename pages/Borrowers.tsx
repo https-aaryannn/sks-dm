@@ -9,7 +9,9 @@ import {
   PlusCircle,
   FileText,
   Download,
-  FileDown
+  FileDown,
+  Clock,
+  Share2
 } from 'lucide-react';
 import { Borrower } from '../types';
 
@@ -24,6 +26,26 @@ interface BorrowersProps {
 
 const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelete, onRepay, onTopUp }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  /* History Modal State */
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [historyBorrower, setHistoryBorrower] = useState<Borrower | null>(null);
+
+  const handleOpenHistory = (b: Borrower) => {
+    setHistoryBorrower(b);
+    setIsHistoryOpen(true);
+  };
+
+  const handleShareStatement = (b: Borrower) => {
+    const url = `${window.location.origin}/#/statement/${b.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      alert(`Link copied to clipboard!\nShare this with ${b.name}:\n${url}`);
+    }).catch(err => {
+      console.error('Failed to copy link: ', err);
+      prompt("Copy this link:", url);
+    });
+  };
+
   const [isRepayModalOpen, setIsRepayModalOpen] = useState(false);
   const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
 
@@ -346,6 +368,22 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                         )}
 
                         <button
+                          onClick={() => handleOpenHistory(borrower)}
+                          title="View History"
+                          className="text-indigo-500 hover:text-indigo-400 p-2 hover:bg-indigo-500/10 rounded transition-colors"
+                        >
+                          <Clock size={18} />
+                        </button>
+
+                        <button
+                          onClick={() => handleShareStatement(borrower)}
+                          title="Share Link"
+                          className="text-pink-500 hover:text-pink-400 p-2 hover:bg-pink-500/10 rounded transition-colors"
+                        >
+                          <Share2 size={18} />
+                        </button>
+
+                        <button
                           onClick={() => handleDownloadStatement(borrower)}
                           title="Download Statement"
                           className="text-slate-400 hover:text-slate-200 p-2 hover:bg-slate-700 rounded transition-colors"
@@ -467,8 +505,23 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                       <span className="text-xs font-medium">Repay</span>
                     </button>
                   )}
+
+                  <button
+                    onClick={() => handleOpenHistory(borrower)}
+                    className="px-3 py-2 text-indigo-400 bg-indigo-500/10 rounded-lg hover:bg-indigo-500/20 transition-colors flex items-center gap-2"
+                  >
+                    <Clock size={18} />
+                    <span className="text-xs font-medium">History</span>
+                  </button>
                 </div>
                 <div className="flex gap-1">
+                  <button
+                    onClick={() => handleShareStatement(borrower)}
+                    className="p-2 text-pink-400 hover:bg-slate-800 rounded-lg transition-colors"
+                    title="Share Link"
+                  >
+                    <Share2 size={18} />
+                  </button>
                   <button
                     onClick={() => handleDownloadStatement(borrower)}
                     className="p-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-colors"
@@ -655,6 +708,76 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* History Modal */}
+      {isHistoryOpen && historyBorrower && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div className="absolute inset-0 bg-black bg-opacity-75" onClick={() => setIsHistoryOpen(false)}></div>
+            </div>
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div className="inline-block align-bottom bg-slate-900/90 backdrop-blur-xl rounded-lg text-left overflow-hidden shadow-xl transform transition-all border border-white/10 sm:my-8 sm:align-middle sm:max-w-2xl w-full">
+              <div className="bg-transparent px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg leading-6 font-medium text-white" id="modal-title">
+                        Repayment History: {historyBorrower.name}
+                      </h3>
+                      <button onClick={() => setIsHistoryOpen(false)} className="text-slate-400 hover:text-white">
+                        <Trash2 size={20} className="rotate-45" />
+                      </button>
+                    </div>
+
+                    <div className="mt-2 bg-black/20 rounded-lg overflow-hidden border border-white/5">
+                      <table className="min-w-full divide-y divide-white/10">
+                        <thead className="bg-white/5">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Date</th>
+                            <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase">Amount</th>
+                            <th className="px-4 py-3 text-center text-xs font-medium text-slate-400 uppercase">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {historyBorrower.history.length === 0 ? (
+                            <tr>
+                              <td colSpan={3} className="px-4 py-8 text-center text-slate-500 text-sm">
+                                No payments recorded yet.
+                              </td>
+                            </tr>
+                          ) : (
+                            [...historyBorrower.history].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((h) => (
+                              <tr key={h.id}>
+                                <td className="px-4 py-3 text-sm text-slate-300">
+                                  {new Date(h.date).toLocaleDateString()} <span className="text-slate-500 text-xs ml-1">{new Date(h.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                </td>
+                                <td className="px-4 py-3 text-sm text-right font-medium text-green-400">
+                                  +₹{h.amount}
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-500/10 text-green-400">
+                                    Received
+                                  </span>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-black/20 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-white/10">
+                <button type="button" onClick={() => setIsHistoryOpen(false)} className="w-full inline-flex justify-center rounded-md border border-slate-600 shadow-sm px-4 py-2 bg-slate-700 text-base font-medium text-slate-200 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>

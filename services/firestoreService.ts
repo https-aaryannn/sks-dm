@@ -1,5 +1,5 @@
 import { db } from './firebase';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc } from 'firebase/firestore';
 import { Borrower } from '../types';
 
 const COLLECTION_NAME = 'borrowers';
@@ -22,4 +22,13 @@ export const updateBorrower = async (borrower: Borrower): Promise<void> => {
 
 export const deleteBorrower = async (id: string): Promise<void> => {
     await deleteDoc(doc(db, COLLECTION_NAME, id));
+};
+
+export const getBorrower = async (id: string): Promise<Borrower | null> => {
+    const docRef = doc(db, COLLECTION_NAME, id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        return { ...docSnap.data(), id: docSnap.id } as Borrower;
+    }
+    return null;
 };
