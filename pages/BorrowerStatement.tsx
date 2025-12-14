@@ -122,8 +122,8 @@ const BorrowerStatement: React.FC = () => {
                                     {borrower.name}
                                 </h1>
                                 <div className="flex items-center text-slate-400 mt-2">
-                                    <Phone size={16} className="mr-2" />
-                                    {borrower.phone}
+                                    <span className="mr-2 inline-flex items-center"><Phone size={16} /></span>
+                                    <span>{borrower.phone}</span>
                                 </div>
                             </div>
                             <div className="flex flex-col md:flex-row gap-3 items-end md:items-center">
@@ -190,9 +190,9 @@ const BorrowerStatement: React.FC = () => {
 
                     {/* History Section */}
                     <div className="space-y-4">
-                        <h2 className="text-xl font-semibold flex items-center gap-2">
-                            <Clock size={20} className="text-slate-400" />
-                            Payment History
+                        <h2 className="text-xl font-semibold flex items-center">
+                            <span className="mr-2 inline-flex items-center text-slate-400"><Clock size={20} /></span>
+                            <span>Payment History</span>
                         </h2>
 
                         {borrower.history.length === 0 ? (
@@ -241,9 +241,9 @@ const BorrowerStatement: React.FC = () => {
                                                     {payment.type === 'loan' ? '+' : '+'}₹{payment.amount}
                                                 </td>
                                                 <td className="px-6 py-4 text-center">
-                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-                                                        <CheckCircle size={12} />
-                                                        Success
+                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
+                                                        <span className="mr-1.5 inline-flex items-center"><CheckCircle size={12} /></span>
+                                                        <span>Success</span>
                                                     </span>
                                                 </td>
                                             </tr>
