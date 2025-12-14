@@ -34,22 +34,14 @@
 
     @media print {
       body {
-        background: white !important;
-        color: black !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
+
       .no-print {
         display: none !important;
       }
-      /* Ensure text contrast on print */
-      * {
-        text-shadow: none !important;
-        box-shadow: none !important;
-      }
-      /* Fix table borders for print */
-      table, th, td {
-        border-color: #e2e8f0 !important; /* slate-200 */
-        color: black !important;
-      }
+
       /* Hide scrollbars in print */
       ::-webkit-scrollbar {
         display: none;
