@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getBorrower } from '../services/firestoreService';
 import { Borrower } from '../types';
-import { Phone, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Phone, CheckCircle, Clock, AlertCircle, FileDown, Printer } from 'lucide-react';
 
 const BorrowerStatement: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -56,6 +56,49 @@ const BorrowerStatement: React.FC = () => {
     const percentage = Math.min(100, (borrower.repaidAmount / borrower.totalPayable) * 100);
     const remaining = borrower.totalPayable - borrower.repaidAmount;
 
+    const handlePrint = () => {
+        window.print();
+    };
+
+    const handleDownloadCSV = () => {
+        // 1. Borrower Summary
+        const summaryRows = [
+            `"Borrower Name","${borrower.name}"`,
+            `"Phone","${borrower.phone}"`,
+            `"Email","${borrower.email}"`,
+            `"Loan Start Date","${borrower.startDate}"`,
+            `"Total Lent Amount","${borrower.loanAmount}"`,
+            `"Total Repaid Amount","${borrower.repaidAmount}"`,
+            `"Outstanding Balance","${remaining}"`,
+            `"Current Status","${borrower.status}"`
+        ];
+
+        // 2. Payment History
+        const historyHeader = '"Payment Date","Type","Amount","Status"';
+        const historyRows = borrower.history.map(h =>
+            `"${new Date(h.date).toLocaleDateString()}","${h.type === 'loan' ? 'Top Up' : 'Payment'}","${h.amount}","${h.type === 'loan' ? 'Received' : 'Success'}"`
+        );
+
+        // Combine
+        const csvContent = [
+            '--- Borrower Statement ---',
+            ...summaryRows,
+            '',
+            '--- Transaction History ---',
+            historyHeader,
+            ...historyRows
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `Statement_${borrower.name.replace(/\s+/g, '_')}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="min-h-screen bg-slate-950 text-white p-4 md:p-8">
             <div className="max-w-3xl mx-auto space-y-6">
@@ -72,12 +115,33 @@ const BorrowerStatement: React.FC = () => {
                                 {borrower.phone}
                             </div>
                         </div>
-                        <span className={`px-4 py-1.5 rounded-full text-sm font-semibold border ${borrower.status === 'Completed'
-                            ? 'bg-green-500/10 text-green-400 border-green-500/20'
-                            : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-                            }`}>
-                            {borrower.status === 'Completed' ? 'Loan Repaid' : 'Active Loan'}
-                        </span>
+                        <div className="flex flex-col md:flex-row gap-3 items-end md:items-center">
+                            <div className="flex gap-2 no-print">
+                                <button
+                                    onClick={handlePrint}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition-colors"
+                                    title="Print or Save as PDF"
+                                >
+                                    <Printer size={16} />
+                                    <span className="hidden sm:inline">PDF</span>
+                                </button>
+                                <button
+                                    onClick={handleDownloadCSV}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition-colors"
+                                    title="Download CSV"
+                                >
+                                    <FileDown size={16} />
+                                    <span className="hidden sm:inline">CSV</span>
+                                </button>
+                            </div>
+
+                            <span className={`px-4 py-1.5 rounded-full text-sm font-semibold border ${borrower.status === 'Completed'
+                                ? 'bg-green-500/10 text-green-400 border-green-500/20'
+                                : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                                }`}>
+                                {borrower.status === 'Completed' ? 'Loan Repaid' : 'Active Loan'}
+                            </span>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">

@@ -31,6 +31,30 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #475569;
     }
+
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      /* Ensure text contrast on print */
+      * {
+        text-shadow: none !important;
+        box-shadow: none !important;
+      }
+      /* Fix table borders for print */
+      table, th, td {
+        border-color: #e2e8f0 !important; /* slate-200 */
+        color: black !important;
+      }
+      /* Hide scrollbars in print */
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    }
   </style>
 
   <link rel="stylesheet" href="/index.css">
