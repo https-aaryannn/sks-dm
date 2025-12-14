@@ -739,6 +739,7 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                         <thead className="bg-white/5">
                           <tr>
                             <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Date</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Type</th>
                             <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase">Amount</th>
                             <th className="px-4 py-3 text-center text-xs font-medium text-slate-400 uppercase">Status</th>
                           </tr>
@@ -756,12 +757,23 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
                                 <td className="px-4 py-3 text-sm text-slate-300">
                                   {new Date(h.date).toLocaleDateString()} <span className="text-slate-500 text-xs ml-1">{new Date(h.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                 </td>
-                                <td className="px-4 py-3 text-sm text-right font-medium text-green-400">
-                                  +₹{h.amount}
+                                <td className="px-4 py-3 text-sm">
+                                  {h.type === 'loan' ? (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                                      Top Up
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                      Payment
+                                    </span>
+                                  )}
+                                </td>
+                                <td className={`px-4 py-3 text-sm text-right font-medium ${h.type === 'loan' ? 'text-white' : 'text-green-400'}`}>
+                                  {h.type === 'loan' ? '+' : '+'}₹{h.amount}
                                 </td>
                                 <td className="px-4 py-3 text-center">
                                   <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-500/10 text-green-400">
-                                    Received
+                                    Success
                                   </span>
                                 </td>
                               </tr>

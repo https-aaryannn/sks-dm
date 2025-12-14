@@ -113,9 +113,10 @@ const App: React.FC = () => {
     const newStatus: 'Active' | 'Completed' = newRepaid >= target.totalPayable ? 'Completed' : 'Active';
 
     const newHistoryItem = {
-      id: Date.now().toString(), // History ID can be local timestamp or random
+      id: Date.now().toString(),
       date: new Date().toISOString(),
-      amount: amount
+      amount: amount,
+      type: 'payment' as const
     };
 
     const updatedBorrower = {
@@ -145,11 +146,19 @@ const App: React.FC = () => {
     // If they owed 0 and now owe money, it becomes Active.
     const newStatus: 'Active' | 'Completed' = target.repaidAmount < newTotalPayable ? 'Active' : 'Completed';
 
+    const newHistoryItem = {
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      amount: amount,
+      type: 'loan' as const
+    };
+
     const updatedBorrower = {
       ...target,
       loanAmount: newLoanAmount,
       totalPayable: newTotalPayable,
-      status: newStatus
+      status: newStatus,
+      history: [...target.history, newHistoryItem]
     };
 
     try {

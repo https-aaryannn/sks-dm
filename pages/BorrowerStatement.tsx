@@ -73,8 +73,8 @@ const BorrowerStatement: React.FC = () => {
                             </div>
                         </div>
                         <span className={`px-4 py-1.5 rounded-full text-sm font-semibold border ${borrower.status === 'Completed'
-                                ? 'bg-green-500/10 text-green-400 border-green-500/20'
-                                : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                            ? 'bg-green-500/10 text-green-400 border-green-500/20'
+                            : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
                             }`}>
                             {borrower.status === 'Completed' ? 'Loan Repaid' : 'Active Loan'}
                         </span>
@@ -130,6 +130,7 @@ const BorrowerStatement: React.FC = () => {
                                 <thead className="bg-black/20 text-slate-400 text-xs uppercase tracking-wider">
                                     <tr>
                                         <th className="px-6 py-4">Date</th>
+                                        <th className="px-6 py-4">Type</th>
                                         <th className="px-6 py-4 text-right">Amount</th>
                                         <th className="px-6 py-4 text-center">Status</th>
                                     </tr>
@@ -150,13 +151,24 @@ const BorrowerStatement: React.FC = () => {
                                                     })}
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-right font-medium text-green-400">
-                                                +₹{payment.amount}
+                                            <td className="px-6 py-4">
+                                                {payment.type === 'loan' ? (
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                                                        Top Up
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                                        Payment
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td className={`px-6 py-4 text-right font-medium ${payment.type === 'loan' ? 'text-white' : 'text-green-400'}`}>
+                                                {payment.type === 'loan' ? '+' : '+'}₹{payment.amount}
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
                                                     <CheckCircle size={12} />
-                                                    Received
+                                                    Success
                                                 </span>
                                             </td>
                                         </tr>

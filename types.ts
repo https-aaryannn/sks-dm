@@ -2,6 +2,7 @@ export interface PaymentHistory {
   id: string;
   date: string;
   amount: number;
+  type?: 'payment' | 'loan';
 }
 
 export interface Borrower {
