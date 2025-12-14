@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { getBorrower } from '../services/firestoreService';
 import { Borrower } from '../types';
 import { Phone, CheckCircle, Clock, AlertCircle, FileDown, Printer } from 'lucide-react';
+// @ts-ignore
+import html2pdf from 'html2pdf.js';
 
 const BorrowerStatement: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -57,7 +59,15 @@ const BorrowerStatement: React.FC = () => {
     const remaining = borrower.totalPayable - borrower.repaidAmount;
 
     const handlePrint = () => {
-        window.print();
+        const element = document.getElementById('statement-content');
+        const opt = {
+            margin: 10,
+            filename: `Statement_${borrower.name.replace(/\s+/g, '_')}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 } as any,
+            html2canvas: { scale: 2, useCORS: true, logging: false },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } as any
+        };
+        html2pdf().from(element).set(opt).save();
     };
 
     const handleDownloadCSV = () => {
@@ -104,143 +114,145 @@ const BorrowerStatement: React.FC = () => {
             <div className="max-w-3xl mx-auto space-y-6">
 
                 {/* Header Card */}
-                <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-2xl p-6 shadow-xl">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/5 pb-6">
-                        <div>
-                            <h1 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
-                                {borrower.name}
-                            </h1>
-                            <div className="flex items-center text-slate-400 mt-2">
-                                <Phone size={16} className="mr-2" />
-                                {borrower.phone}
+                <div id="statement-content">
+                    <div className="bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-2xl p-6 shadow-xl mb-6">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/5 pb-6">
+                            <div>
+                                <h1 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
+                                    {borrower.name}
+                                </h1>
+                                <div className="flex items-center text-slate-400 mt-2">
+                                    <Phone size={16} className="mr-2" />
+                                    {borrower.phone}
+                                </div>
+                            </div>
+                            <div className="flex flex-col md:flex-row gap-3 items-end md:items-center">
+                                <div className="flex gap-2 no-print">
+                                    <button
+                                        onClick={handlePrint}
+                                        className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition-colors"
+                                        title="Print or Save as PDF"
+                                    >
+                                        <Printer size={16} />
+                                        <span className="hidden sm:inline">PDF</span>
+                                    </button>
+                                    <button
+                                        onClick={handleDownloadCSV}
+                                        className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition-colors"
+                                        title="Download CSV"
+                                    >
+                                        <FileDown size={16} />
+                                        <span className="hidden sm:inline">CSV</span>
+                                    </button>
+                                </div>
+
+                                <span className={`px-4 py-1.5 rounded-full text-sm font-semibold border ${borrower.status === 'Completed'
+                                    ? 'bg-green-500/10 text-green-400 border-green-500/20'
+                                    : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                                    }`}>
+                                    {borrower.status === 'Completed' ? 'Loan Repaid' : 'Active Loan'}
+                                </span>
                             </div>
                         </div>
-                        <div className="flex flex-col md:flex-row gap-3 items-end md:items-center">
-                            <div className="flex gap-2 no-print">
-                                <button
-                                    onClick={handlePrint}
-                                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition-colors"
-                                    title="Print or Save as PDF"
-                                >
-                                    <Printer size={16} />
-                                    <span className="hidden sm:inline">PDF</span>
-                                </button>
-                                <button
-                                    onClick={handleDownloadCSV}
-                                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition-colors"
-                                    title="Download CSV"
-                                >
-                                    <FileDown size={16} />
-                                    <span className="hidden sm:inline">CSV</span>
-                                </button>
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
+                            <div className="p-4 rounded-xl bg-black/20 border border-white/5">
+                                <p className="text-xs text-slate-500 uppercase tracking-wider">Loan Amount</p>
+                                <p className="text-xl font-bold text-white mt-1">₹{borrower.loanAmount}</p>
                             </div>
+                            <div className="p-4 rounded-xl bg-black/20 border border-white/5">
+                                <p className="text-xs text-slate-500 uppercase tracking-wider">Repaid</p>
+                                <p className="text-xl font-bold text-green-400 mt-1">₹{borrower.repaidAmount}</p>
+                            </div>
+                            <div className="p-4 rounded-xl bg-black/20 border border-white/5">
+                                <p className="text-xs text-slate-500 uppercase tracking-wider">Outstanding</p>
+                                <p className="text-xl font-bold text-amber-400 mt-1">₹{remaining}</p>
+                            </div>
+                            <div className="p-4 rounded-xl bg-black/20 border border-white/5">
+                                <p className="text-xs text-slate-500 uppercase tracking-wider">Start Date</p>
+                                <p className="text-lg font-medium text-slate-200 mt-1">{new Date(borrower.startDate).toLocaleDateString()}</p>
+                            </div>
+                        </div>
 
-                            <span className={`px-4 py-1.5 rounded-full text-sm font-semibold border ${borrower.status === 'Completed'
-                                ? 'bg-green-500/10 text-green-400 border-green-500/20'
-                                : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-                                }`}>
-                                {borrower.status === 'Completed' ? 'Loan Repaid' : 'Active Loan'}
-                            </span>
+                        <div className="mt-6">
+                            <div className="flex justify-between text-sm mb-2">
+                                <span className="text-slate-400">Repayment Progress</span>
+                                <span className="text-slate-200 font-medium">{Math.round(percentage)}%</span>
+                            </div>
+                            <div className="h-3 bg-slate-800 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-1000"
+                                    style={{ width: `${percentage}%` }}
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
-                        <div className="p-4 rounded-xl bg-black/20 border border-white/5">
-                            <p className="text-xs text-slate-500 uppercase tracking-wider">Loan Amount</p>
-                            <p className="text-xl font-bold text-white mt-1">₹{borrower.loanAmount}</p>
-                        </div>
-                        <div className="p-4 rounded-xl bg-black/20 border border-white/5">
-                            <p className="text-xs text-slate-500 uppercase tracking-wider">Repaid</p>
-                            <p className="text-xl font-bold text-green-400 mt-1">₹{borrower.repaidAmount}</p>
-                        </div>
-                        <div className="p-4 rounded-xl bg-black/20 border border-white/5">
-                            <p className="text-xs text-slate-500 uppercase tracking-wider">Outstanding</p>
-                            <p className="text-xl font-bold text-amber-400 mt-1">₹{remaining}</p>
-                        </div>
-                        <div className="p-4 rounded-xl bg-black/20 border border-white/5">
-                            <p className="text-xs text-slate-500 uppercase tracking-wider">Start Date</p>
-                            <p className="text-lg font-medium text-slate-200 mt-1">{new Date(borrower.startDate).toLocaleDateString()}</p>
-                        </div>
-                    </div>
+                    {/* History Section */}
+                    <div className="space-y-4">
+                        <h2 className="text-xl font-semibold flex items-center gap-2">
+                            <Clock size={20} className="text-slate-400" />
+                            Payment History
+                        </h2>
 
-                    <div className="mt-6">
-                        <div className="flex justify-between text-sm mb-2">
-                            <span className="text-slate-400">Repayment Progress</span>
-                            <span className="text-slate-200 font-medium">{Math.round(percentage)}%</span>
-                        </div>
-                        <div className="h-3 bg-slate-800 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-1000"
-                                style={{ width: `${percentage}%` }}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* History Section */}
-                <div className="space-y-4">
-                    <h2 className="text-xl font-semibold flex items-center gap-2">
-                        <Clock size={20} className="text-slate-400" />
-                        Payment History
-                    </h2>
-
-                    {borrower.history.length === 0 ? (
-                        <div className="text-center py-12 bg-slate-900/20 rounded-xl border border-white/5 border-dashed">
-                            <p className="text-slate-500">No payments recorded yet.</p>
-                        </div>
-                    ) : (
-                        <div className="overflow-hidden bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-xl shadow-lg">
-                            <table className="w-full text-left">
-                                <thead className="bg-black/20 text-slate-400 text-xs uppercase tracking-wider">
-                                    <tr>
-                                        <th className="px-6 py-4">Date</th>
-                                        <th className="px-6 py-4">Type</th>
-                                        <th className="px-6 py-4 text-right">Amount</th>
-                                        <th className="px-6 py-4 text-center">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-white/5">
-                                    {[...borrower.history].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((payment) => (
-                                        <tr key={payment.id} className="hover:bg-white/5 transition-colors">
-                                            <td className="px-6 py-4 text-slate-300">
-                                                {new Date(payment.date).toLocaleDateString('en-IN', {
-                                                    day: 'numeric',
-                                                    month: 'long',
-                                                    year: 'numeric'
-                                                })}
-                                                <div className="text-xs text-slate-500 mt-0.5">
-                                                    {new Date(payment.date).toLocaleTimeString('en-IN', {
-                                                        hour: '2-digit',
-                                                        minute: '2-digit'
-                                                    })}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                {payment.type === 'loan' ? (
-                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                                                        Top Up
-                                                    </span>
-                                                ) : (
-                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                                                        Payment
-                                                    </span>
-                                                )}
-                                            </td>
-                                            <td className={`px-6 py-4 text-right font-medium ${payment.type === 'loan' ? 'text-white' : 'text-green-400'}`}>
-                                                {payment.type === 'loan' ? '+' : '+'}₹{payment.amount}
-                                            </td>
-                                            <td className="px-6 py-4 text-center">
-                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-                                                    <CheckCircle size={12} />
-                                                    Success
-                                                </span>
-                                            </td>
+                        {borrower.history.length === 0 ? (
+                            <div className="text-center py-12 bg-slate-900/20 rounded-xl border border-white/5 border-dashed">
+                                <p className="text-slate-500">No payments recorded yet.</p>
+                            </div>
+                        ) : (
+                            <div className="overflow-hidden bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-xl shadow-lg">
+                                <table className="w-full text-left">
+                                    <thead className="bg-black/20 text-slate-400 text-xs uppercase tracking-wider">
+                                        <tr>
+                                            <th className="px-6 py-4">Date</th>
+                                            <th className="px-6 py-4">Type</th>
+                                            <th className="px-6 py-4 text-right">Amount</th>
+                                            <th className="px-6 py-4 text-center">Status</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
+                                    </thead>
+                                    <tbody className="divide-y divide-white/5">
+                                        {[...borrower.history].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((payment) => (
+                                            <tr key={payment.id} className="hover:bg-white/5 transition-colors">
+                                                <td className="px-6 py-4 text-slate-300">
+                                                    {new Date(payment.date).toLocaleDateString('en-IN', {
+                                                        day: 'numeric',
+                                                        month: 'long',
+                                                        year: 'numeric'
+                                                    })}
+                                                    <div className="text-xs text-slate-500 mt-0.5">
+                                                        {new Date(payment.date).toLocaleTimeString('en-IN', {
+                                                            hour: '2-digit',
+                                                            minute: '2-digit'
+                                                        })}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    {payment.type === 'loan' ? (
+                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                                                            Top Up
+                                                        </span>
+                                                    ) : (
+                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                                            Payment
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className={`px-6 py-4 text-right font-medium ${payment.type === 'loan' ? 'text-white' : 'text-green-400'}`}>
+                                                    {payment.type === 'loan' ? '+' : '+'}₹{payment.amount}
+                                                </td>
+                                                <td className="px-6 py-4 text-center">
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
+                                                        <CheckCircle size={12} />
+                                                        Success
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <div className="text-center text-xs text-slate-600 pt-8 pb-4">
