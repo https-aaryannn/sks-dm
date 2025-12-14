@@ -11,7 +11,8 @@ import {
   Download,
   FileDown,
   Clock,
-  Share2
+  Share2,
+  CheckCircle
 } from 'lucide-react';
 import { Borrower } from '../types';
 
@@ -487,61 +488,74 @@ const Borrowers: React.FC<BorrowersProps> = ({ borrowers, onAdd, onEdit, onDelet
               </div>
 
               {/* Actions */}
-              <div className="flex items-center justify-between border-t border-slate-800 pt-3 mt-1">
-                <div className="flex gap-2">
+              {/* Actions */}
+              <div className="flex flex-col gap-3 border-t border-slate-800 pt-3 mt-1">
+                {/* Primary Actions Row */}
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => handleOpenTopUp(borrower)}
-                    className="px-3 py-2 text-purple-400 bg-purple-500/10 rounded-lg hover:bg-purple-500/20 transition-colors flex items-center gap-2"
+                    className="flex items-center justify-center gap-2 px-3 py-2 text-purple-400 bg-purple-500/10 rounded-lg hover:bg-purple-500/20 transition-colors"
                   >
                     <PlusCircle size={18} />
-                    <span className="text-xs font-medium">Top Up</span>
+                    <span className="text-sm font-medium">Top Up</span>
                   </button>
-                  {borrower.status === 'Active' && (
+
+                  {borrower.status === 'Active' ? (
                     <button
                       onClick={() => handleOpenRepay(borrower)}
-                      className="px-3 py-2 text-green-400 bg-green-500/10 rounded-lg hover:bg-green-500/20 transition-colors flex items-center gap-2"
+                      className="flex items-center justify-center gap-2 px-3 py-2 text-green-400 bg-green-500/10 rounded-lg hover:bg-green-500/20 transition-colors"
                     >
                       <DollarSign size={18} />
-                      <span className="text-xs font-medium">Repay</span>
+                      <span className="text-sm font-medium">Repay</span>
                     </button>
+                  ) : (
+                    <div className="flex items-center justify-center gap-2 px-3 py-2 text-slate-500 bg-slate-800/50 rounded-lg cursor-not-allowed">
+                      <CheckCircle size={18} />
+                      <span className="text-sm font-medium">Completed</span>
+                    </div>
                   )}
+                </div>
 
+                {/* Secondary Actions Row */}
+                <div className="flex justify-between items-center bg-black/20 p-1.5 rounded-lg border border-white/5">
                   <button
                     onClick={() => handleOpenHistory(borrower)}
-                    className="px-3 py-2 text-indigo-400 bg-indigo-500/10 rounded-lg hover:bg-indigo-500/20 transition-colors flex items-center gap-2"
+                    className="p-2 text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors flex-1 flex justify-center"
+                    title="View History"
                   >
-                    <Clock size={18} />
-                    <span className="text-xs font-medium">History</span>
+                    <Clock size={20} />
                   </button>
-                </div>
-                <div className="flex gap-1">
+                  <div className="w-px h-4 bg-white/10 mx-1"></div>
                   <button
                     onClick={() => handleShareStatement(borrower)}
-                    className="p-2 text-pink-400 hover:bg-slate-800 rounded-lg transition-colors"
+                    className="p-2 text-pink-400 hover:bg-pink-500/10 rounded-lg transition-colors flex-1 flex justify-center"
                     title="Share Link"
                   >
-                    <Share2 size={18} />
+                    <Share2 size={20} />
                   </button>
+                  <div className="w-px h-4 bg-white/10 mx-1"></div>
                   <button
                     onClick={() => handleDownloadStatement(borrower)}
-                    className="p-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-colors"
+                    className="p-2 text-slate-400 hover:bg-slate-700/50 rounded-lg transition-colors flex-1 flex justify-center"
                     title="Download Statement"
                   >
-                    <FileDown size={18} />
+                    <FileDown size={20} />
                   </button>
+                  <div className="w-px h-4 bg-white/10 mx-1"></div>
                   <button
                     onClick={() => handleOpenEdit(borrower)}
-                    className="p-2 text-blue-400 hover:bg-slate-800 rounded-lg transition-colors"
+                    className="p-2 text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors flex-1 flex justify-center"
                     title="Edit"
                   >
-                    <Edit2 size={18} />
+                    <Edit2 size={20} />
                   </button>
+                  <div className="w-px h-4 bg-white/10 mx-1"></div>
                   <button
                     onClick={() => onDelete(borrower.id)}
-                    className="p-2 text-red-400 hover:bg-slate-800 rounded-lg transition-colors"
+                    className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors flex-1 flex justify-center"
                     title="Delete"
                   >
-                    <Trash2 size={18} />
+                    <Trash2 size={20} />
                   </button>
                 </div>
               </div>
